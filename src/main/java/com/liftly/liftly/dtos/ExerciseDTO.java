@@ -8,5 +8,5 @@ import java.util.List;
 @Data
 public class ExerciseDTO {
     private String name;
-    private List<SetDTO> sets;
+    private List<WorkoutSetDTO> sets;
 }

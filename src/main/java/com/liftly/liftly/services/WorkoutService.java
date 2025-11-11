@@ -1,24 +1,29 @@
 package com.liftly.liftly.services;
 
 import com.liftly.liftly.dtos.ExerciseDTO;
-import com.liftly.liftly.dtos.SetDTO;
+import com.liftly.liftly.dtos.WorkoutSetDTO;
 import com.liftly.liftly.dtos.WorkoutDTO;
 import com.liftly.liftly.models.Exercise;
 import com.liftly.liftly.models.Workout;
 import com.liftly.liftly.models.WorkoutSet;
+import com.liftly.liftly.repositories.ExerciseRepository;
 import com.liftly.liftly.repositories.WorkoutRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class WorkoutService {
 
     private final WorkoutRepository workoutRepository;
+    private final ExerciseRepository exerciseRepository;
 
-    public WorkoutService(WorkoutRepository workoutRepository) {
+    public WorkoutService(WorkoutRepository workoutRepository, ExerciseRepository exerciseRepository) {
         this.workoutRepository = workoutRepository;
+        this.exerciseRepository = exerciseRepository;
     }
 
     public List<Workout> getAllWorkouts() {
@@ -38,11 +43,11 @@ public class WorkoutService {
 
                 List<WorkoutSet> sets = new ArrayList<>();
                 if (exDto.getSets() != null) {
-                    for (SetDTO setDto : exDto.getSets()) {
+                    for (WorkoutSetDTO workoutSetDto : exDto.getSets()) {
                         WorkoutSet set = new WorkoutSet();
-                        set.setOrderNumber(setDto.getOrder());
-                        set.setReps(setDto.getReps());
-                        set.setWeight(setDto.getWeight());
+                        set.setOrderNumber(workoutSetDto.getOrderNumber());
+                        set.setReps(workoutSetDto.getReps());
+                        set.setWeight(workoutSetDto.getWeight());
                         set.setExercise(exercise);
                         sets.add(set);
                     }
@@ -54,5 +59,40 @@ public class WorkoutService {
 
         workout.setExercises(exercises);
         return workoutRepository.save(workout);
+    }
+
+    @Transactional
+    public WorkoutDTO updateWorkout(Integer workoutId, WorkoutDTO dto) {
+        Workout workout = workoutRepository.findById(workoutId.longValue())
+                .orElseThrow(() -> new RuntimeException("Workout not found"));
+
+        workout.setName(dto.getName());
+
+        // Remove old exercises
+        workout.getExercises().clear();
+
+        List<Exercise> exercises = dto.getExercises().stream().map(exDto -> {
+            Exercise exercise = new Exercise();
+            exercise.setName(exDto.getName());
+            exercise.setWorkout(workout);
+
+            List<WorkoutSet> sets = exDto.getSets().stream().map(workoutSetDto -> {
+                WorkoutSet set = new WorkoutSet();
+                set.setOrderNumber(workoutSetDto.getOrderNumber());
+                set.setReps(workoutSetDto.getReps());
+                set.setWeight(workoutSetDto.getWeight());
+                set.setExercise(exercise);
+                return set;
+            }).collect(Collectors.toList());
+
+            exercise.setSets(sets);
+            return exercise;
+        }).collect(Collectors.toList());
+
+        workout.setExercises(exercises);
+
+        workoutRepository.save(workout);
+
+        return dto; // Optionally map back from entity to DTO
     }
 }

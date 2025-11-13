@@ -6,7 +6,9 @@ import com.liftly.liftly.services.WorkoutService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/workouts")
@@ -19,8 +21,8 @@ public class WorkoutController {
     }
 
     @GetMapping
-    public List<Workout> getAllWorkouts() {
-        return workoutService.getAllWorkouts();
+    public List<Workout> getAllWorkouts(@RequestParam LocalDateTime date)  {
+        return workoutService.getAllWorkouts(Optional.ofNullable(date));
     }
 
     @PostMapping

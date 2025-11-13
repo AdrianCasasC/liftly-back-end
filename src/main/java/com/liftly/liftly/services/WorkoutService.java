@@ -11,8 +11,10 @@ import com.liftly.liftly.repositories.WorkoutRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,7 +28,16 @@ public class WorkoutService {
         this.exerciseRepository = exerciseRepository;
     }
 
-    public List<Workout> getAllWorkouts() {
+    public List<Workout> getAllWorkouts(Optional<LocalDateTime> date) {
+        if (date.isPresent()) {
+            LocalDateTime dt = date.get();
+            int year = dt.getYear();
+            int month = dt.getMonthValue();
+            int day = dt.getDayOfMonth();
+            return workoutRepository.findByYearAndMonth(year, month, day);
+        }
+
+        // Si no viene fecha → devolver todos
         return workoutRepository.findAll();
     }
 

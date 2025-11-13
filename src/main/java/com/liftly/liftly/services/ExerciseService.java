@@ -25,7 +25,7 @@ public class ExerciseService {
 
         exercise.setName(dto.getName());
 
-        if (exercise.getSets() == null) {
+        if (exercise.getSets() != null) {
             List<WorkoutSet> newSets = dto.getSets().stream().map(setDto -> {
                 WorkoutSet set = new WorkoutSet();
                 set.setOrderNumber(setDto.getOrderNumber());
@@ -33,7 +33,7 @@ public class ExerciseService {
                 set.setWeight(setDto.getWeight());
                 set.setExercise(exercise);
                 return set;
-            }).collect(Collectors.toList());
+            }).toList();
             exercise.getSets().clear();
             exercise.getSets().addAll(newSets);
         }

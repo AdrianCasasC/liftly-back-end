@@ -106,4 +106,31 @@ public class WorkoutService {
 
         return dto; // Optionally map back from entity to DTO
     }
+
+    @Transactional
+    public void deleteWorkout(Integer workoutId) {
+
+        Workout workout = workoutRepository.findById(workoutId.longValue())
+                .orElseThrow(() -> new RuntimeException("Workout not found"));
+
+        // 1. Remove child references (keeps Hibernate session consistent)
+        if (workout.getExercises() != null) {
+            for (Exercise ex : workout.getExercises()) {
+
+                // Clear sets from each exercise
+                if (ex.getSets() != null) {
+                    ex.getSets().clear();
+                }
+
+                // Break reverse relationship so Hibernate doesn't complain
+                ex.setWorkout(null);
+            }
+
+            // Clear exercises list from parent to avoid stale references
+            workout.getExercises().clear();
+        }
+
+        // 2. Delete workout (cascades children due to CascadeType.ALL)
+        workoutRepository.delete(workout);
+    }
 }

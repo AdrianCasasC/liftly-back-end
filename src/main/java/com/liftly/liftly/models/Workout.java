@@ -19,7 +19,7 @@ public class Workout {
     private LocalDateTime createdAt;
 
     // Optional: link to exercises later
-    @OneToMany(mappedBy = "workout", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "workout", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Exercise> exercises;
 

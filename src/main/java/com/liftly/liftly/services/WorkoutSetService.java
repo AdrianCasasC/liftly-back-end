@@ -7,6 +7,8 @@ import com.liftly.liftly.repositories.WorkoutSetRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class WorkoutSetService {
     private final WorkoutSetRepository setRepository;
@@ -25,5 +27,17 @@ public class WorkoutSetService {
         setRepository.save(set);
 
         return dto;
+    }
+
+    public WorkoutSet toEntitySet(WorkoutSetDTO dto) {
+        WorkoutSet set = new WorkoutSet();
+        set.setOrderNumber(dto.getOrderNumber());
+        set.setReps(dto.getReps());
+        set.setWeight(dto.getWeight());
+        return set;
+    }
+
+    public List<WorkoutSet> toEntitySetFromList(List<WorkoutSetDTO> dtos) {
+         return dtos.stream().map(this::toEntitySet).toList();
     }
 }

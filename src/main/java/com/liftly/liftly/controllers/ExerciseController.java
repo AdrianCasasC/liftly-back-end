@@ -18,4 +18,14 @@ public class ExerciseController {
     public ResponseEntity<ExerciseDTO> updateExercise(@PathVariable Integer id, @RequestBody ExerciseDTO dto) {
         return ResponseEntity.ok(exerciseService.updateExercise(id, dto));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteExercise(@PathVariable Integer id) {
+        exerciseService.deleteExercise(id);
+        return ResponseEntity.ok().build();
+    }
+    @PostMapping()
+    public ResponseEntity<ExerciseDTO> createExercise(@RequestParam Integer workoutId, @RequestBody ExerciseDTO dto) {
+        return ResponseEntity.ok(exerciseService.createExercise(workoutId, dto));
+    }
 }

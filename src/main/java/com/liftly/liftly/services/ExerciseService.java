@@ -46,7 +46,8 @@ public class ExerciseService {
             exercise.getSets().addAll(newSets);
         }
 
-        exerciseRepository.save(exercise);
+        Exercise savedExercise = exerciseRepository.save(exercise);
+        dto.setId(Optional.of(savedExercise.getId()));
         return dto;
     }
 

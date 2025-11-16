@@ -58,7 +58,8 @@ public class ExerciseService {
         Exercise exerciseEntity = toExerciseEntity(dto);
         exerciseEntity.setWorkout(workout);
 
-        exerciseRepository.save(exerciseEntity);
+        Exercise savedExercise = exerciseRepository.save(exerciseEntity);
+        dto.setId(Optional.of(savedExercise.getId()));
         return dto;
     }
 

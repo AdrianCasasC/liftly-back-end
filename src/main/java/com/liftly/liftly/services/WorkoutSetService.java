@@ -40,4 +40,16 @@ public class WorkoutSetService {
     public List<WorkoutSet> toEntitySetFromList(List<WorkoutSetDTO> dtos) {
          return dtos.stream().map(this::toEntitySet).toList();
     }
+
+    public WorkoutSetDTO toDtoSet(WorkoutSet entity) {
+        return WorkoutSetDTO.builder()
+                .orderNumber(entity.getOrderNumber())
+                .reps(entity.getReps())
+                .weight(entity.getWeight())
+                .build();
+    }
+
+    public List<WorkoutSetDTO> toDtoSetFromList(List<WorkoutSet> sets) {
+        return sets.stream().map(this::toDtoSet).toList();
+    }
 }

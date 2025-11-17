@@ -1,18 +1,20 @@
 package com.liftly.liftly.services;
 
+import com.liftly.liftly.dtos.ClosestExerciseDTO;
 import com.liftly.liftly.dtos.ExerciseDTO;
+import com.liftly.liftly.dtos.WorkoutSetDTO;
 import com.liftly.liftly.models.Exercise;
 import com.liftly.liftly.models.Workout;
 import com.liftly.liftly.models.WorkoutSet;
 import com.liftly.liftly.repositories.ExerciseRepository;
 import com.liftly.liftly.repositories.WorkoutRepository;
-import com.liftly.liftly.repositories.WorkoutSetRepository;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class ExerciseService {
@@ -64,15 +66,6 @@ public class ExerciseService {
         return dto;
     }
 
-    private Exercise toExerciseEntity(ExerciseDTO dto) {
-        Exercise exercise = new Exercise();
-        exercise.setName(dto.getName());
-        exercise.setSets(setService.toEntitySetFromList(dto.getSets()));
-        List<WorkoutSet> sets = exercise.getSets();
-        sets.forEach(set -> set.setExercise(exercise));
-        return exercise;
-    };
-
     public void deleteExercise(Integer id) {
         Exercise exercise = exerciseRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Exercise not found"));
@@ -83,5 +76,41 @@ public class ExerciseService {
             workout.getExercises().remove(exercise);
         }
         exerciseRepository.delete(exercise);
+    }
+
+    public List<ClosestExerciseDTO> getClosestExercises(String name, LocalDate date) {
+        List<Exercise> exercises = exerciseRepository.findClosestByName(name, date, PageRequest.of(0, 3));
+        return exercises.stream()
+                .map(e -> new ClosestExerciseDTO(
+                        e.getId(),
+                        e.getName(),
+                        e.getWorkout().getId(),
+                        e.getWorkout().getName(),
+                        e.getWorkout().getCreatedAt(),
+                        e.getSets().stream().map(setService::toDtoSet).toList()
+                ))
+                .toList();
+    }
+
+    private Exercise toExerciseEntity(ExerciseDTO dto) {
+        Exercise exercise = new Exercise();
+        exercise.setName(dto.getName());
+        exercise.setSets(setService.toEntitySetFromList(dto.getSets()));
+        List<WorkoutSet> sets = exercise.getSets();
+        sets.forEach(set -> set.setExercise(exercise));
+        return exercise;
+    };
+    
+    private ExerciseDTO toDto(Exercise entity) {
+        List<WorkoutSetDTO> setsDtos = setService.toDtoSetFromList(entity.getSets());
+        return ExerciseDTO.builder()
+                .id(Optional.of(entity.getId()))
+                .name(entity.getName())
+                .sets(setsDtos)
+                .build();
+    }
+    
+    private List<ExerciseDTO> toDtoFromList(List<Exercise> exercises) {
+        return exercises.stream().map(this::toDto).toList();
     }
 }

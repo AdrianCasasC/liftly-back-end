@@ -2,10 +2,13 @@ package com.liftly.liftly.services;
 
 import com.liftly.liftly.dtos.ClosestExerciseDTO;
 import com.liftly.liftly.dtos.ExerciseDTO;
+import com.liftly.liftly.dtos.ExerciseListDTO;
 import com.liftly.liftly.dtos.WorkoutSetDTO;
 import com.liftly.liftly.models.Exercise;
+import com.liftly.liftly.models.ListExercise;
 import com.liftly.liftly.models.Workout;
 import com.liftly.liftly.models.WorkoutSet;
+import com.liftly.liftly.repositories.ExerciseListRepository;
 import com.liftly.liftly.repositories.ExerciseRepository;
 import com.liftly.liftly.repositories.WorkoutRepository;
 import org.springframework.data.domain.PageRequest;
@@ -19,11 +22,13 @@ import java.util.Optional;
 @Service
 public class ExerciseService {
     private final ExerciseRepository exerciseRepository;
+    private final ExerciseListRepository exerciseListRepository;
     private final WorkoutRepository workoutRepository;
     private final WorkoutSetService setService;
 
-    public ExerciseService(ExerciseRepository exerciseRepository, WorkoutRepository workoutRepositor, WorkoutSetService setService) {
+    public ExerciseService(ExerciseRepository exerciseRepository, ExerciseListRepository exerciseListRepository, WorkoutRepository workoutRepositor, WorkoutSetService setService) {
         this.exerciseRepository = exerciseRepository;
+        this.exerciseListRepository = exerciseListRepository;
         this.workoutRepository = workoutRepositor;
         this.setService = setService;
     }
@@ -64,6 +69,13 @@ public class ExerciseService {
         Exercise savedExercise = exerciseRepository.save(exerciseEntity);
         dto.setId(Optional.of(savedExercise.getId()));
         return dto;
+    }
+
+    public ExerciseListDTO addExerciseToCollection(ExerciseListDTO dto) {
+        ListExercise exerciseEntity = toExerciseCollectionEntity(dto);
+
+        ListExercise savedExercise = exerciseListRepository.save(exerciseEntity);
+        return toExerciseCollectionDTO(savedExercise);
     }
 
     public void deleteExercise(Integer id) {
@@ -112,5 +124,21 @@ public class ExerciseService {
     
     private List<ExerciseDTO> toDtoFromList(List<Exercise> exercises) {
         return exercises.stream().map(this::toDto).toList();
+    }
+
+    private ListExercise toExerciseCollectionEntity(ExerciseListDTO entity) {
+        return ListExercise
+                .builder()
+                .name(entity.getName())
+                .muscle(entity.getMuscle())
+                .build();
+    }
+
+    private ExerciseListDTO toExerciseCollectionDTO(ListExercise entity) {
+        return ExerciseListDTO
+                .builder()
+                .name(entity.getName())
+                .muscle(entity.getMuscle())
+                .build();
     }
 }

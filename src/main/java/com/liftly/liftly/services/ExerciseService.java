@@ -2,13 +2,13 @@ package com.liftly.liftly.services;
 
 import com.liftly.liftly.dtos.ClosestExerciseDTO;
 import com.liftly.liftly.dtos.ExerciseDTO;
-import com.liftly.liftly.dtos.ExerciseListDTO;
+import com.liftly.liftly.dtos.ExerciseCollectionDTO;
 import com.liftly.liftly.dtos.WorkoutSetDTO;
 import com.liftly.liftly.models.Exercise;
-import com.liftly.liftly.models.ListExercise;
+import com.liftly.liftly.models.ExerciseCollection;
 import com.liftly.liftly.models.Workout;
 import com.liftly.liftly.models.WorkoutSet;
-import com.liftly.liftly.repositories.ExerciseListRepository;
+import com.liftly.liftly.repositories.ExerciseCollectionRepository;
 import com.liftly.liftly.repositories.ExerciseRepository;
 import com.liftly.liftly.repositories.WorkoutRepository;
 import org.springframework.data.domain.PageRequest;
@@ -22,13 +22,13 @@ import java.util.Optional;
 @Service
 public class ExerciseService {
     private final ExerciseRepository exerciseRepository;
-    private final ExerciseListRepository exerciseListRepository;
+    private final ExerciseCollectionRepository exerciseCollectionRepository;
     private final WorkoutRepository workoutRepository;
     private final WorkoutSetService setService;
 
-    public ExerciseService(ExerciseRepository exerciseRepository, ExerciseListRepository exerciseListRepository, WorkoutRepository workoutRepositor, WorkoutSetService setService) {
+    public ExerciseService(ExerciseRepository exerciseRepository, ExerciseCollectionRepository exerciseCollectionRepository, WorkoutRepository workoutRepositor, WorkoutSetService setService) {
         this.exerciseRepository = exerciseRepository;
-        this.exerciseListRepository = exerciseListRepository;
+        this.exerciseCollectionRepository = exerciseCollectionRepository;
         this.workoutRepository = workoutRepositor;
         this.setService = setService;
     }
@@ -71,11 +71,16 @@ public class ExerciseService {
         return dto;
     }
 
-    public ExerciseListDTO addExerciseToCollection(ExerciseListDTO dto) {
-        ListExercise exerciseEntity = toExerciseCollectionEntity(dto);
+    public ExerciseCollectionDTO addExerciseToCollection(ExerciseCollectionDTO dto) {
+        ExerciseCollection exerciseEntity = toExerciseCollectionEntity(dto);
 
-        ListExercise savedExercise = exerciseListRepository.save(exerciseEntity);
+        ExerciseCollection savedExercise = exerciseCollectionRepository.save(exerciseEntity);
         return toExerciseCollectionDTO(savedExercise);
+    }
+
+    public List<ExerciseCollectionDTO> getExerciseCollection() {
+        List<ExerciseCollection> collectionEntityList =  exerciseCollectionRepository.findAll();
+        return toExerciseCollectionDTOList(collectionEntityList);
     }
 
     public void deleteExercise(Integer id) {
@@ -126,19 +131,27 @@ public class ExerciseService {
         return exercises.stream().map(this::toDto).toList();
     }
 
-    private ListExercise toExerciseCollectionEntity(ExerciseListDTO entity) {
-        return ListExercise
+    private ExerciseCollection toExerciseCollectionEntity(ExerciseCollectionDTO entity) {
+        return ExerciseCollection
                 .builder()
                 .name(entity.getName())
                 .muscle(entity.getMuscle())
                 .build();
     }
 
-    private ExerciseListDTO toExerciseCollectionDTO(ListExercise entity) {
-        return ExerciseListDTO
+    private ExerciseCollectionDTO toExerciseCollectionDTO(ExerciseCollection entity) {
+        return ExerciseCollectionDTO
                 .builder()
                 .name(entity.getName())
                 .muscle(entity.getMuscle())
                 .build();
+    }
+
+    private List<ExerciseCollectionDTO> toExerciseCollectionDTOList(List<ExerciseCollection> entityList) {
+        return entityList.stream().map(this::toExerciseCollectionDTO).toList();
+    }
+
+    private List<ExerciseCollection> toExerciseCollectionList(List<ExerciseCollectionDTO> dto) {
+        return dto.stream().map(this::toExerciseCollectionEntity).toList();
     }
 }

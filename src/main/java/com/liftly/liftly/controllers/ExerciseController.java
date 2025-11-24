@@ -2,7 +2,7 @@ package com.liftly.liftly.controllers;
 
 import com.liftly.liftly.dtos.ClosestExerciseDTO;
 import com.liftly.liftly.dtos.ExerciseDTO;
-import com.liftly.liftly.dtos.ExerciseListDTO;
+import com.liftly.liftly.dtos.ExerciseCollectionDTO;
 import com.liftly.liftly.services.ExerciseService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -36,8 +36,13 @@ public class ExerciseController {
     }
 
     @PostMapping("/list")
-    public ResponseEntity<ExerciseListDTO> addExerciseToCollection(@RequestBody ExerciseListDTO dto) {
+    public ResponseEntity<ExerciseCollectionDTO> addExerciseToCollection(@RequestBody ExerciseCollectionDTO dto) {
         return ResponseEntity.ok(exerciseService.addExerciseToCollection(dto));
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<List<ExerciseCollectionDTO>> getExerciseCollection() {
+        return ResponseEntity.ok(exerciseService.getExerciseCollection());
     }
 
     @GetMapping("/closest")

@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class ExerciseListDTO {
+public class ExerciseCollectionDTO {
     private String name;
     private String muscle;
 }

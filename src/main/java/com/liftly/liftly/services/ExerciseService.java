@@ -134,7 +134,8 @@ public class ExerciseService {
     private ExerciseCollection toExerciseCollectionEntity(ExerciseCollectionDTO entity) {
         return ExerciseCollection
                 .builder()
-                .name(entity.getName())
+                .value(entity.getValue())
+                .label(entity.getLabel())
                 .muscle(entity.getMuscle())
                 .build();
     }
@@ -142,7 +143,8 @@ public class ExerciseService {
     private ExerciseCollectionDTO toExerciseCollectionDTO(ExerciseCollection entity) {
         return ExerciseCollectionDTO
                 .builder()
-                .name(entity.getName())
+                .value(entity.getValue())
+                .label(entity.getLabel())
                 .muscle(entity.getMuscle())
                 .build();
     }

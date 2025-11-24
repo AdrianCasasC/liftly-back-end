@@ -6,6 +6,7 @@ import lombok.Data;
 @Data
 @Builder
 public class ExerciseCollectionDTO {
-    private String name;
+    private String label;
+    private String value;
     private String muscle;
 }

@@ -11,12 +11,13 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "list")
+@Table(name = "exercise_collection")
 public class ExerciseCollection {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String name;
+    private String label;
+    private String value;
     private String muscle;
 }

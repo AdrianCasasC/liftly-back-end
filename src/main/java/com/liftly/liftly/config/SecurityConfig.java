@@ -16,7 +16,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .anyRequest().permitAll() // allow all endpoints
                 )
-                .httpBasic(Customizer.withDefaults()) // optional, keeps basic HTTP auth available
+                .httpBasic(Customizer.withDefaults()) // (optional) keeps basic HTTP auth available
                 .formLogin(form -> form.disable())   // disable form login
                 .headers(headers -> headers.disable()); // disable all security headers (includes frameOptions)
 

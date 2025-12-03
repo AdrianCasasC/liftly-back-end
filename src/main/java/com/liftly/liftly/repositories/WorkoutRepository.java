@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public interface WorkoutRepository extends JpaRepository<Workout, Long> {
-    @Query("SELECT w FROM Workout w WHERE YEAR(w.createdAt) = :year AND MONTH(w.createdAt) = :month AND DAY(w.createdAt) = :day" )
+    @Query("SELECT w FROM Workout w WHERE YEAR(w.createdAt) = :year AND MONTH(w.createdAt) = :month AND DAY(w.createdAt) = :day")
     List<Workout> findByYearAndMonth(@Param("year") int year, @Param("month") int month, @Param("day") int day);
 
 }
